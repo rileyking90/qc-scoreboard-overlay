@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QC Scoreboard</title>
+  <style>
+    body {
+      background: transparent;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 2em;
+      text-align: center;
+      padding: 20px;
+    }
+    #title {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    .team {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="title">Loading...</div>
+  <div class="team" id="team1"></div>
+  <div class="team" id="team2"></div>
+
+  <script>
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSBNIOSFv1qrGt5QWwZ0FDVCJDCl42s0e8-SzI1gQTGq1SD5eF5-Pm6Ru4q0PfA70PaEYhsMj84uSqx/pub?gid=205255799&single=true&output=csv';
+
+    async function loadData() {
+      const response = await fetch(sheetUrl);
+      const data = await response.text();
+      const rows = data.trim().split('\n').map(row => row.split(','));
+
+      document.getElementById('title').innerText = rows[0][0]; // Match Title
+      document.getElementById('team1').innerText = `${rows[1][0]}: ${rows[1][1]}`;
+      document.getElementById('team2').innerText = `${rows[2][0]}: ${rows[2][1]}`;
+    }
+
+    loadData();
+    setInterval(loadData, 5000); // Refresh every 5 seconds
+  </script>
+</body>
+</html>
