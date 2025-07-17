@@ -96,23 +96,18 @@
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSBNIOSFv1qrGt5QWwZ0FDVCJDCl42s0e8-SzI1gQTGq1SD5eF5-Pm6Ru4q0PfA70PaEYhsMj84uSqx/pub?gid=205255799&single=true&output=csv';
 
-    const nationData = {
-      "Fire Nation": {
-        cssClass: "fire",
-        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Fire_Logo.png"
-      },
-      "Air Nation": {
-        cssClass: "air",
-        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Air_Logo.png"
-      },
-      "Earth Nation": {
-        cssClass: "earth",
-        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Earth_Logo.png"
-      },
-      "Water Nation": {
-        cssClass: "water",
-        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Water_Logo.png"
-      }
+    const iconMap = {
+      "Air Nation": "https://rileyking90.github.io/qc-scoreboard-overlay/Air_Logo.png",
+      "Earth Nation": "https://rileyking90.github.io/qc-scoreboard-overlay/Earth_Logo.png",
+      "Fire Nation": "https://rileyking90.github.io/qc-scoreboard-overlay/Fire_Logo.png",
+      "Water Nation": "https://rileyking90.github.io/qc-scoreboard-overlay/Water_Logo.png"
+    };
+
+    const nationStyles = {
+      "Fire Nation": "fire",
+      "Air Nation": "air",
+      "Earth Nation": "earth",
+      "Water Nation": "water"
     };
 
     async function loadData() {
@@ -124,23 +119,25 @@
 
       for (let i = 1; i < rows.length; i++) {
         const [nation, shards] = rows[i];
-        if (!nation || !shards || !nationData[nation]) continue;
+
+        if (!nation || !shards) continue;
 
         nations.push({
           nation: nation,
           shards: parseInt(shards.replace(/[^\d]/g, '')) || 0,
-          icon: nationData[nation].icon,
-          cssClass: nationData[nation].cssClass
+          imageURL: iconMap[nation] || ''
         });
       }
 
+      // Sort by shard count descending
       nations.sort((a, b) => b.shards - a.shards);
 
       let html = '';
       nations.forEach(n => {
+        const cssClass = nationStyles[n.nation] || '';
         html += `
-          <div class="nation-row ${n.cssClass}">
-            <img class="icon" src="${n.icon}" alt="${n.nation}" />
+          <div class="nation-row ${cssClass}">
+            <img class="icon" src="${n.imageURL}" alt="${n.nation}" />
             <div class="nation-name">${n.nation}</div>
             <div class="shard-total">
               ${n.shards}
@@ -154,7 +151,7 @@
     }
 
     loadData();
-    setInterval(loadData, 10000);
+    setInterval(loadData, 10000); // Refresh every 10 seconds
   </script>
 </body>
 </html>
