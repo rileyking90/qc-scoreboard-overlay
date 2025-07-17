@@ -6,34 +6,70 @@
   <style>
     body {
       background: transparent;
-      color: white;
       font-family: 'Arial', sans-serif;
-      text-align: center;
+      margin: 0;
       padding-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
     }
+
     .nation-row {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 15px 0;
+      width: 600px;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 16px;
       gap: 20px;
+      color: white;
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
     }
-    .nation-row img {
+
+    .nation-row img.icon {
       width: 48px;
       height: 48px;
       border-radius: 8px;
     }
+
     .nation-name {
       font-weight: bold;
       font-size: 24px;
-      width: 150px;
+      width: 180px;
       text-align: left;
     }
+
     .shard-total {
       font-size: 24px;
       font-weight: 600;
-      width: 80px;
-      text-align: right;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .shard-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .fire {
+      background: linear-gradient(to right, #aa3b3b, #ffc548);
+    }
+
+    .air {
+      background: linear-gradient(to right, #3893fc, #f1f7ff);
+      color: #000;
+    }
+
+    .earth {
+      background: linear-gradient(to right, #22681f, #8f7d48);
+    }
+
+    .water {
+      background: linear-gradient(to right, #000d7e, #0099ff);
     }
   </style>
 </head>
@@ -43,28 +79,53 @@
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSBNIOSFv1qrGt5QWwZ0FDVCJDCl42s0e8-SzI1gQTGq1SD5eF5-Pm6Ru4q0PfA70PaEYhsMj84uSqx/pub?gid=205255799&single=true&output=csv';
 
+    const nationStyles = {
+      "Fire Nation": "fire",
+      "Air Nation": "air",
+      "Earth Nation": "earth",
+      "Water Nation": "water"
+    };
+
     async function loadData() {
       const response = await fetch(sheetUrl);
-      const data = await response.text();
-      const rows = data.trim().split('\n').map(row => row.split(','));
+      const csv = await response.text();
+      const rows = csv.trim().split('\n').map(row => row.split(','));
+
+      const nations = [];
+
+      for (let i = 1; i < rows.length; i++) {
+        const [_, nation, shards, imageURL] = rows[i];
+        if (!nation || !shards || !imageURL) continue;
+        nations.push({
+          nation: nation,
+          shards: parseInt(shards.replace(/[^\d]/g, '')) || 0,
+          imageURL: imageURL
+        });
+      }
+
+      // Sort by shard count descending
+      nations.sort((a, b) => b.shards - a.shards);
 
       let html = '';
-      for (let i = 1; i < rows.length; i++) { // skip header row
-        const [iconUrl, nation, shards] = rows[i];
+      nations.forEach(n => {
+        const cssClass = nationStyles[n.nation] || '';
         html += `
-          <div class="nation-row">
-            <img src="${iconUrl}" alt="${nation}" />
-            <div class="nation-name">${nation}</div>
-            <div class="shard-total">${shards}</div>
+          <div class="nation-row ${cssClass}">
+            <img class="icon" src="${n.imageURL}" alt="${n.nation}" />
+            <div class="nation-name">${n.nation}</div>
+            <div class="shard-total">
+              ${n.shards}
+              <img class="shard-icon" src="https://cdn-icons-png.flaticon.com/512/1827/1827334.png" alt="Shard Icon" />
+            </div>
           </div>
         `;
-      }
+      });
 
       document.getElementById('overlay').innerHTML = html;
     }
 
     loadData();
-    setInterval(loadData, 10000); // refresh every 10 seconds
+    setInterval(loadData, 10000); // Refresh every 10 seconds
   </script>
 </body>
 </html>
