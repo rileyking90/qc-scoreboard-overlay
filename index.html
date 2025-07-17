@@ -2,29 +2,43 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>QC Scoreboard</title>
+  <title>QCMania Shard Totals</title>
   <style>
     body {
       background: transparent;
       color: white;
-      font-family: Arial, sans-serif;
-      font-size: 2em;
+      font-family: 'Arial', sans-serif;
       text-align: center;
-      padding: 20px;
+      padding-top: 30px;
     }
-    #title {
-      font-size: 2.5em;
-      margin-bottom: 20px;
+    .nation-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 15px 0;
+      gap: 20px;
     }
-    .team {
-      margin: 10px 0;
+    .nation-row img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+    }
+    .nation-name {
+      font-weight: bold;
+      font-size: 24px;
+      width: 150px;
+      text-align: left;
+    }
+    .shard-total {
+      font-size: 24px;
+      font-weight: 600;
+      width: 80px;
+      text-align: right;
     }
   </style>
 </head>
 <body>
-  <div id="title">Loading...</div>
-  <div class="team" id="team1"></div>
-  <div class="team" id="team2"></div>
+  <div id="overlay">Loading shard totals...</div>
 
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSBNIOSFv1qrGt5QWwZ0FDVCJDCl42s0e8-SzI1gQTGq1SD5eF5-Pm6Ru4q0PfA70PaEYhsMj84uSqx/pub?gid=205255799&single=true&output=csv';
@@ -34,13 +48,23 @@
       const data = await response.text();
       const rows = data.trim().split('\n').map(row => row.split(','));
 
-      document.getElementById('title').innerText = rows[0][0]; // Match Title
-      document.getElementById('team1').innerText = `${rows[1][0]}: ${rows[1][1]}`;
-      document.getElementById('team2').innerText = `${rows[2][0]}: ${rows[2][1]}`;
+      let html = '';
+      for (let i = 1; i < rows.length; i++) { // skip header row
+        const [iconUrl, nation, shards] = rows[i];
+        html += `
+          <div class="nation-row">
+            <img src="${iconUrl}" alt="${nation}" />
+            <div class="nation-name">${nation}</div>
+            <div class="shard-total">${shards}</div>
+          </div>
+        `;
+      }
+
+      document.getElementById('overlay').innerHTML = html;
     }
 
     loadData();
-    setInterval(loadData, 5000); // Refresh every 5 seconds
+    setInterval(loadData, 10000); // refresh every 10 seconds
   </script>
 </body>
 </html>
