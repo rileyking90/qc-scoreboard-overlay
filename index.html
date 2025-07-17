@@ -3,18 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>QCMania Shard Totals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Charm&display=swap" rel="stylesheet">
   <style>
     body {
       background: #121212;
-      font-family: Arial, sans-serif;
+      font-family: 'Charm', cursive;
       color: white;
       padding: 40px;
       text-align: center;
     }
 
+    h1 {
+      font-size: 48px;
+      margin-bottom: 40px;
+    }
+
     .nation-row {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       margin: 10px auto;
       width: 600px;
@@ -24,6 +30,15 @@
       font-weight: bold;
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
       animation: pulse 4s infinite alternate;
+      gap: 20px;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: white;
+      padding: 4px;
     }
 
     .fire { background: linear-gradient(270deg, #aa3b3b, #ffc548); }
@@ -35,6 +50,17 @@
       0% { box-shadow: 0 0 10px rgba(255,255,255,0.1); }
       100% { box-shadow: 0 0 20px rgba(255,255,255,0.4); }
     }
+
+    .nation-name {
+      flex: 1;
+      text-align: left;
+      font-size: 26px;
+    }
+
+    .shard-total {
+      font-weight: bold;
+      font-size: 28px;
+    }
   </style>
 </head>
 <body>
@@ -44,11 +70,23 @@
   <script>
     const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSBNIOSFv1qrGt5QWwZ0FDVCJDCl42s0e8-SzI1gQTGq1SD5eF5-Pm6Ru4q0PfA70PaEYhsMj84uSqx/pub?gid=205255799&single=true&output=csv';
 
-    const nationStyles = {
-      "Fire Nation": "fire",
-      "Air Nation": "air",
-      "Earth Nation": "earth",
-      "Water Nation": "water"
+    const nationData = {
+      "Fire Nation": {
+        style: "fire",
+        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Fire_Logo.png"
+      },
+      "Air Nation": {
+        style: "air",
+        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Air_Logo.png"
+      },
+      "Earth Nation": {
+        style: "earth",
+        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Earth_Logo.png"
+      },
+      "Water Nation": {
+        style: "water",
+        icon: "https://rileyking90.github.io/qc-scoreboard-overlay/Water_Logo.png"
+      }
     };
 
     async function loadData() {
@@ -63,21 +101,24 @@
         if (!nation || !shards) continue;
 
         nations.push({
-          nation,
+          nation: nation.trim(),
           shards: parseInt(shards.replace(/[^\d]/g, '')) || 0
         });
       }
 
-      // Sort nations by core shards descending
       nations.sort((a, b) => b.shards - a.shards);
 
       let html = '';
       nations.forEach(n => {
-        const cssClass = nationStyles[n.nation] || '';
+        const data = nationData[n.nation] || {};
+        const cssClass = data.style || '';
+        const icon = data.icon ? `<img class="icon" src="${data.icon}" alt="${n.nation} icon">` : '';
+
         html += `
           <div class="nation-row ${cssClass}">
-            <div>${n.nation}</div>
-            <div>${n.shards}</div>
+            ${icon}
+            <div class="nation-name">${n.nation}</div>
+            <div class="shard-total">${n.shards}</div>
           </div>
         `;
       });
@@ -86,7 +127,7 @@
     }
 
     loadData();
-    setInterval(loadData, 10000); // refresh every 10 seconds
+    setInterval(loadData, 10000);
   </script>
 </body>
 </html>
