@@ -25,7 +25,9 @@
       border-radius: 16px;
       gap: 20px;
       color: white;
-      box-shadow: 0 0 12px rgba(0,0,0,0.3);
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+      animation: pulse 4s infinite alternate;
+      background-size: 200% 200%;
     }
 
     .nation-row img.icon {
@@ -55,21 +57,36 @@
       height: 24px;
     }
 
+    @keyframes pulse {
+      0% { box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+      100% { box-shadow: 0 0 20px rgba(255,255,255,0.6); }
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
     .fire {
-      background: linear-gradient(to right, #aa3b3b, #ffc548);
+      background: linear-gradient(270deg, #aa3b3b, #ffc548, #aa3b3b);
+      animation: gradientFlow 8s ease infinite, pulse 4s infinite alternate;
     }
 
     .air {
-      background: linear-gradient(to right, #3893fc, #f1f7ff);
-      color: #000;
+      background: linear-gradient(270deg, #f1f7ff, #3893fc, #f1f7ff);
+      animation: gradientFlow 8s ease infinite, pulse 4s infinite alternate;
+      color: black;
     }
 
     .earth {
-      background: linear-gradient(to right, #22681f, #8f7d48);
+      background: linear-gradient(270deg, #22681f, #8f7d48, #22681f);
+      animation: gradientFlow 8s ease infinite, pulse 4s infinite alternate;
     }
 
     .water {
-      background: linear-gradient(to right, #000d7e, #0099ff);
+      background: linear-gradient(270deg, #000d7e, #0099ff, #000d7e);
+      animation: gradientFlow 8s ease infinite, pulse 4s infinite alternate;
     }
   </style>
 </head>
