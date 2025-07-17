@@ -111,8 +111,11 @@
       const nations = [];
 
       for (let i = 1; i < rows.length; i++) {
-        const [_, nation, shards, imageURL] = rows[i];
+        const [iconPreview, nation, shards] = rows[i];
+        const imageURL = rows[i][3]; // Actual image URL from Column D
+
         if (!nation || !shards || !imageURL) continue;
+
         nations.push({
           nation: nation,
           shards: parseInt(shards.replace(/[^\d]/g, '')) || 0,
